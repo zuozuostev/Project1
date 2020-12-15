@@ -1,19 +1,6 @@
 import pandas as pd
-import copy
-import math
-
-
-#   相关系数计算
-def cor(a, b):
-    a_adv = sum(a) / len(a)
-    b_adv = sum(b) / len(b)
-    # 计算分子，协方差————按照协方差公式
-    cov_ab = sum([(x - a_adv) * (y - b_adv) for x, y in zip(a, b)])
-    # 计算分母，标准差乘积
-    sq = math.sqrt(sum([(x - a_adv) ** 2 for x in a]) * sum([(x - b_adv) ** 2 for x in b]))
-    r = cov_ab / sq
-    return r
-
+import exe1
+import exe2
 
 #   导入数据源1
 d1 = pd.read_excel('一.数据源1.xlsx')
@@ -88,75 +75,32 @@ d.loc[d['Constitution_x'] == "good", 'Constitution_x'] = 80.0
 d.loc[d['Constitution_x'] == "general", 'Constitution_x'] = 70.0
 d.loc[d['Constitution_x'] == "bad", 'Constitution_x'] = 60.0
 
-# 1.	学生中家乡在Beijing的所有课程的平均成绩。
-i = 0
-adv = []  # 存放一个学生的平均成绩
-stus = []  # 存放学生
-while i < num:
-    if str(d['City_x'][i]) == "Beijing":
-        adv.append(d['ID'][i])
-        adv.append(d['Name_x'][i])
-        sum1 = (d['C1_x'][i] + d['C2_x'][i] + d['C3_x'][i] + d['C4_x'][i] + d['C5_x'][i] + d['C6_x'][i] + d['C7_x'][i] +
-                d['C8_x'][i] + d['C9_x'][i] + (d['C10_x'][i])) / 10
-        adv.append(sum1)
-        a = copy.deepcopy(adv)
-        stus.append(a)
-        adv.clear()
-    i += 1
-print("学生中家乡在Beijing的所有课程的平均成绩如下")
-print("{}\t\t{}\t\t{}".format("id", "name", "adv"))
-for stu in stus:
-    print("%-8s%-12s%s" %(stu[0], stu[1], stu[2]))
+#   实验1
+# exe1.show_exe1(d,num)
+
+#  实验2
+# 1. 请以课程1成绩为x轴，体能成绩为y轴，画出散点图。
+print("1.散点图如下：")
+exe2.draw_scatter(d)
 print("-" * 30)
 
-# 2.	学生中家乡在广州，课程1在80分以上，且课程9在9分以上的男同学的数量。
-i = 0
-k = 0
-while i < num:
-    if str(d['City_x'][i]) == "Guangzhou" and d['C1_x'][i] >= 80 and d['C9_x'][i] >= 90 and str(
-            d['Gender_x'][i]) == "boy":
-        k += 1
-    i += 1
-print("学生中家乡在广州，课程1在80分以上，且课程9在9分以上的男同学的数量为：%d" % k)
+# 2. 以5分为间隔，画出课程1的成绩直方图。
+print("2.直方图如下：")
+exe2.draw_hist(d)
 print("-" * 30)
 
-# 3.	比较广州和上海两地女生的平均体能测试成绩，哪个地区的更强些？
-i = 0
-k1 = 0
-k2 = 0
-adv2 = 0
-adv1 = 0
-while i < num:
-    if str(d['City_x'][i]) == "Guangzhou" and str(d['Gender_x'][i]) == "girl":
-        k1 += 1
-        adv1 += d['Constitution_x'][i]
-    if str(d['City_x'][i]) == "Shanghai" and str(d['Gender_x'][i]) == "girl":
-        k2 += 1
-        adv2 += d['Constitution_x'][i]
-    i += 1
-adv1 = adv1 / k1
-adv2 = adv2 / k2
-print("比较广州和上海两地女生的平均体能测试成绩，哪个地区的更强些")
-print("广州女生的平均体能测试成绩：%.2f" % adv1)
-print("上海女生的平均体能测试成绩：%.2f" % adv2)
-if adv1 > adv2:
-    print("结论：广州地区女生强")
-elif adv1 < adv2:
-    print("结论：上海地区女生强")
-else:
-    print("广州 上海两地的女生一样强")
+# 3. 对每门成绩进行z-score归一化，得到归一化的数据矩阵。
+print("3.每门成绩归一化的矩阵如下：")
+z_d = exe2.z_score(d, num)
+print(z_d)
 print("-" * 30)
 
-# 4.	学习成绩和体能测试成绩，两者的相关性是多少？
-r = []
-y_constitution = []
-i = 0
-while i < num:   # 体能成绩
-    y_constitution.append(d['Constitution_x'][i])
-    i += 1
-for k in range(1, 10):    # 9门成绩
-    x_score = d['C%d_x' % k].values
-    #   计算9个相关性
-    r.append(cor(x_score, y_constitution))
-for k in range(0, 9):
-    print("成绩C%d和体能测试成绩，两者的相关性是: %f" % (k+1, r[k]))
+# 4. 计算出106x106的相关矩阵，并可视化出混淆矩阵。（为避免歧义，这里“协相关矩阵”进一步细化更正为100x100的相关矩阵，100为学生样本数目，视实际情况而定）
+print("4.每个学生的相关矩阵，及其可视化出的混淆矩阵：")
+d_stu = exe2.stu_cor(z_d, num)
+print(d_stu)
+print("-" * 30)
+
+# 5. 根据相关矩阵，找到距样本最离每个近的三个样本，得到100x3的矩阵（每一行为对应三个样本的ID）输出到txt文件中，以\t,\n间隔。
+print("5.已保存....")
+exe2.find_ID(d, d_stu, num)
