@@ -1,1 +1,1 @@
-exe2,exe3配合main函数运行
+exe2需要与exe1、main函数共同运行
