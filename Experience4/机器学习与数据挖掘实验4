@@ -1,1 +1,43 @@
+### 题目
+学习sigmoid函数和逻辑回归算法。将实验三.2中的样例数据用聚类的结果打标签{0，1}，并用逻辑回归模型拟合。
+1.	学习并画出sigmoid函数
+2.	设计梯度下降算法，实现逻辑回归模型的学习过程。
+3.	根据给定数据（实验三.2），用梯度下降算法进行数据拟合，并用学习好的模型对(2,6)分类。
+（对2,3实现有难度的同学，可以直接调用sklearn中LogisticRegression进行学习）
+
+### 作业环境：
+■文件说明：
+一个pycharm文件exe4，与main函数配合运行
+■函数说明：
+# 导入逻辑回归模型函数库
+from sklearn.linear_model import LogisticRegression
+
+训练效果可视化
+def train_plt(data, label, lr_clf):
+
+plt_sigmoid(data, w):
+    # 其拟合方程形式为f(x)=w0+w1*x1+w2*x2....
+    # 生成两个矩阵
+    data = np.mat(data)
+    w = np.array(w)
+    z = data * np.transpose(w)  # 矩阵转置，相乘后得到z值
+    z.sort(axis=0)
+
+    # 画sigmoid函数
+    phi_z = sigmoid(z)
+    plt.plot(z, phi_z)
+    plt.axvline(0.0, color='k')
+    plt.axhspan(0.0, 1.0, facecolor='1.0', alpha=1.0, ls='dotted')
+    plt.yticks([0.0, 0.5, 1.0])
+    plt.ylim(-0.1, 1.1)
+    plt.xlabel('z')
+    plt.ylabel('$\phi (z)$')
+plt.show()
+# 可视化预测新样本
+def test_plt(data, label, lr_clf)
+### 难题与解决
+###总结
+实验3得到了数据的分类结果，先把这些结果一一对应的添加到老师给的数据上。形成了带有标签的数据源。
+然后调用逻辑回归模型，并拟合所构造的数据集。sigmoid函数（phi_z = 1.0 / (1.0 + np.exp(-z))，得到x轴、y轴的数据，即可画出sigmoid函数。最后可视化训练结果（用一条直线划分数据为两类）、可视化对（2，6）的分类结果。
+通过本次实验，了解了并学习sigmoid函数，知道了它的作用。但是本次实验是调用python里面的sk-learn库现成的逻辑回归模型，没有能够用自己的代码实现。但是我也去网上学习了这个模型。也有不少的收获。
 
